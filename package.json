@@ -1,6 +1,6 @@
 {
   "name": "33talk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Two Teletype Model 33 terminals, one keyboard. One is ELIZA (1966), one is a local LLM (2026). Guess which is which.",
   "license": "Apache-2.0",
   "type": "module",

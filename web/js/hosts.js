@@ -19,18 +19,37 @@ export function reset(hosts = HOSTS) {
   hosts.forEach(h => h.reset && h.reset());
 }
 
-/* Same words on both sides when something goes wrong. A host identifiable by
-   its excuse is as much of a leak as one identifiable by its latency. */
+/* Same words on both sides when something goes wrong -- and, more
+   importantly, the same OUTCOME. See failTogether below. */
 const HOST_ERROR = 'THE LINE TO THE COMPUTER DROPPED.  TRY AGAIN.';
 const TIMEOUT_MS = 30000;
+
+const FAILED = Symbol('host failed');
 
 function settle(promise) {
   return new Promise(resolve => {
     let done = false;
     const finish = value => { if (!done) { done = true; resolve(value); } };
-    setTimeout(() => finish(HOST_ERROR), TIMEOUT_MS);
-    Promise.resolve(promise).then(finish, () => finish(HOST_ERROR));
+    setTimeout(() => finish(FAILED), TIMEOUT_MS);
+    Promise.resolve(promise).then(finish, () => finish(FAILED));
   });
+}
+
+/* If ONE host fails, BOTH print the failure.
+
+   Identical wording is not enough. ELIZA runs in this browser and cannot
+   fail; the LLM crosses a network and can time out, hit a rate limit, or
+   find the server down. So a round where exactly one machine apologises
+   names the LLM outright, and no amount of matching the text helps -- the
+   tell is which roll it appears on.
+
+   Failing together throws away a working ELIZA answer, which feels wasteful
+   and is the entire point: the player must learn nothing from the failure.
+   Rounds are cheap; the blind test is not. */
+function failTogether(texts) {
+  return texts.some(t => t === FAILED)
+    ? texts.map(() => HOST_ERROR)
+    : texts;
 }
 
 /* THE sync gate.
@@ -45,5 +64,6 @@ function settle(promise) {
 export function ask(hosts, line) {
   return Promise
     .all(hosts.map(h => settle(Promise.resolve().then(() => h.respond(line)))))
+    .then(failTogether)
     .then(texts => texts.map(text => toPaper(text)));
 }

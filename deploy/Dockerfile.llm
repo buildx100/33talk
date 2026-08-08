@@ -87,3 +87,15 @@ ENV LLAMA_ARG_MODEL=/models/model.gguf \
 
 EXPOSE 16002
 ENTRYPOINT ["/app/llama-server"]
+
+# --no-context-shift is the only real ceiling on how much work one request
+# can ask for. LLAMA_ARG_N_PREDICT above is a DEFAULT, not a limit -- the
+# source reads "number of tokens to predict (default: N, -1 = infinity)",
+# and a request setting max_tokens simply overrides it. With context shift
+# enabled, generation can then roll the window forward and continue
+# indefinitely; a single unauthenticated request was measured still running
+# after two minutes.
+#
+# Turning it off makes the 2048-token context a hard stop. A request may
+# still ask for more, and will still be cut off there.
+CMD ["--no-context-shift"]
