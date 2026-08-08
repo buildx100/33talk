@@ -5,6 +5,11 @@ One is wired to ELIZA (1966). One is wired to a local LLM (2026). Which is
 which is randomised, and you have to commit to a guess before the answer is
 shown.
 
+![Two Model 33 terminals answering the same line, one from 1966 and one from 2026](docs/screenshot.png)
+
+Both machines were typed the same thing. One of those answers is sixty years
+older than the other. **Which one?**
+
 The machine is not the product. The blind test is the product. The machine is
 the stage — and it happens to be the best teaching device ever built for
 explaining why terminals behave the way they do.
