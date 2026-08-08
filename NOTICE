@@ -1,0 +1,38 @@
+33talk
+Copyright 2026 the 33talk authors
+
+This product includes software developed by the 33talk authors,
+licensed under the Apache License, Version 2.0 (see LICENSE).
+
+--------------------------------------------------------------------------
+ELIZA
+--------------------------------------------------------------------------
+web/js/eliza-rules.js embeds, byte for byte, the DOCTOR script from the
+appendix of Joseph Weizenbaum's January 1966 CACM article "ELIZA -- A
+Computer Program For the Study of Natural Language Communication Between Man
+And Machine". An archive copy is kept at
+docs/eliza-original/DOCTOR-1966-CACM.txt.
+
+That transcription is by Anthony Hay, December 2020, from
+https://github.com/anthay/ELIZA, released under CC0 1.0 Universal. The
+original MAD-SLIP source was recovered from the Weizenbaum archives at MIT
+and released into the public domain under CC0 with the agreement of
+Weizenbaum's estate; see https://elizagen.org.
+
+CC0 imposes no conditions. The credit here is courtesy, not obligation.
+See docs/eliza.md and docs/eliza-original/README.md.
+
+--------------------------------------------------------------------------
+Trademark
+--------------------------------------------------------------------------
+"Teletype" is a trademark. This project is not affiliated with, endorsed by,
+or connected to its owner. It is called 33talk for that reason. References
+to the Teletype(R) Model 33 in prose are descriptive, identifying the
+historical machine the project is about.
+
+--------------------------------------------------------------------------
+Fonts (not currently bundled)
+--------------------------------------------------------------------------
+If OFL-licensed teletype faces are ever bundled, the SIL Open Font License
+travels with the font files regardless of this project's licence. Ship the
+full OFL text alongside them and do not rename the fonts.

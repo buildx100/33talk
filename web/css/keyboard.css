@@ -1,0 +1,47 @@
+/* The ASR-33 keyboard. */
+
+#deck{flex:0 0 auto;display:flex;justify-content:center;padding-left:8px;padding-right:8px;}
+
+/* The rows are indented with margin-left. If the rows were centred
+   individually, each would be centred INCLUDING its indent and the whole
+   keyboard would drift sideways. So: pack them left inside a fit-content
+   box, and centre that box instead. */
+#kb{display:flex;flex-direction:column;align-items:flex-start;width:fit-content;gap:var(--gap);}
+.krow{display:flex;gap:var(--gap);}
+
+.key{
+  width:var(--key);height:var(--key);border-radius:50%;
+  background:radial-gradient(circle at 38% 28%, #6E6D5F 0%, var(--keycap) 46%, var(--keycap-lo) 100%);
+  box-shadow:0 3px 0 #35342D, 0 5px 7px rgba(0,0,0,.42), inset 0 1px 1px rgba(255,255,255,.16);
+  color:var(--legend);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  line-height:1;user-select:none;cursor:default;
+  transition:transform .05s ease-out, box-shadow .05s ease-out, filter .05s;
+  position:relative;flex:0 0 auto;
+}
+.key .up{font-size:calc(var(--key)*.24);opacity:.92;height:calc(var(--key)*.26);display:flex;align-items:center;}
+.key .lo{font-size:calc(var(--key)*.33);font-weight:600;}
+
+/* left:0; right:0; text-align:center -- NOT bare position:absolute. With no
+   left/right the element falls back to its static position, which inside a
+   flex column is not the middle, and every legend drifts left. */
+.key .ctlx{
+  position:absolute;top:calc(var(--key)*.17);left:0;right:0;
+  text-align:center;font-size:calc(var(--key)*.16);
+  letter-spacing:.02em;opacity:.5;pointer-events:none;
+}
+.key.hasctl .lo{margin-top:calc(var(--key)*.15);}
+.key.tiny .lo{font-size:calc(var(--key)*.19);text-align:center;line-height:1.05;letter-spacing:.01em;}
+
+.key.space{
+  width:calc(var(--pitch) * 5.6 - var(--gap));
+  height:calc(var(--key)*.62);border-radius:calc(var(--key)*.18);
+  background:linear-gradient(180deg,#6A6959,var(--keycap-lo));
+  margin-top:calc(var(--gap)*.4);
+}
+.key.down{
+  transform:translateY(3px);
+  box-shadow:0 0 0 #35342D, 0 2px 4px rgba(0,0,0,.5), inset 0 1px 3px rgba(0,0,0,.45);
+  filter:brightness(.82);
+}

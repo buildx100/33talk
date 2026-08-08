@@ -1,0 +1,12 @@
+# The static half: the module tree, served by nginx, which also
+# reverse-proxies /v1 to llama-server.
+#
+# No build step. web/ is native ES modules with no bundler, so what nginx
+# serves is exactly what is in the repository.
+
+FROM nginx:1.27-alpine
+
+COPY web /usr/share/nginx/html
+COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 16001

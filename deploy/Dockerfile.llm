@@ -1,0 +1,89 @@
+# The 2026 host: qwen3:0.6b behind an OpenAI-compatible API.
+#
+# The model IS baked into the image. That is a deliberate reversal of the
+# usual advice, and it is affordable only because the model is tiny: Q4_0 of
+# a 0.6B model is 429 MB. The blind test is worthless if the LLM half is not
+# there, so a cloud deploy that boots and then spends its first few minutes
+# downloading is a worse trade than a larger image.
+#
+# Change the model by rebuilding, not by editing a volume.
+
+# ---- llama.cpp itself -----------------------------------------------------
+# The official image is 845 MB, of which /app -- the binary and every CPU
+# variant it dlopens -- is 39 MB. The other 800 MB is a full Ubuntu with the
+# build environment still installed. Take the 39 MB and leave the rest.
+FROM ghcr.io/ggml-org/llama.cpp:server AS upstream
+
+# ---- the model ------------------------------------------------------------
+FROM ubuntu:24.04 AS model
+
+# ggml-org is llama.cpp's own HuggingFace org, so the GGUF and the server
+# binary come from the same people.
+ARG MODEL_REPO=ggml-org/Qwen3-0.6B-GGUF
+ARG MODEL_FILE=Qwen3-0.6B-Q4_0.gguf
+
+# hf-mirror.com works where huggingface.co is blocked:
+#   docker compose build --build-arg HF_HOST=https://hf-mirror.com
+ARG HF_HOST=https://huggingface.co
+
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+
+# 429 MB over a connection that is not always willing to hold still. Two
+# things matter here and neither is optional:
+#
+#   -C -   resume. Plain --retry restarts from byte zero, so a reset at
+#          200 MB costs you the 200 MB. Retries must continue, not restart.
+#
+#   the loop, not --retry. A failed RUN discards its whole layer, so a
+#          retry at the Docker level starts from nothing. Retrying inside
+#          the same RUN is what makes resume worth having.
+#
+# Then verify the size against what the server said it would be, because a
+# truncated GGUF fails at model-load time with an error that looks nothing
+# like a bad download.
+RUN mkdir -p /models \
+ && URL="${HF_HOST}/${MODEL_REPO}/resolve/main/${MODEL_FILE}" \
+ && EXPECTED=$(curl -sSLI "$URL" | tr -d '\r' | awk 'tolower($1)=="x-linked-size:"{print $2}') \
+ && echo "expecting ${EXPECTED:-unknown} bytes from $URL" \
+ && for i in 1 2 3 4 5 6 7 8 9 10; do \
+      curl -fL -C - --connect-timeout 20 -o /models/model.gguf "$URL" && break; \
+      echo "attempt $i interrupted at $(stat -c%s /models/model.gguf 2>/dev/null || echo 0) bytes, resuming"; \
+      sleep 5; \
+    done \
+ && ACTUAL=$(stat -c%s /models/model.gguf) \
+ && if [ -n "$EXPECTED" ] && [ "$ACTUAL" != "$EXPECTED" ]; then \
+      echo "truncated: got $ACTUAL of $EXPECTED bytes"; exit 1; \
+    fi \
+ && ls -lh /models/model.gguf
+
+# ---- runtime --------------------------------------------------------------
+# ubuntu:24.04, not debian:12-slim. The two are the same size to within a few
+# megabytes, but the binaries were built on 24.04 and Debian 12 is older:
+# it fails at load with GLIBC_2.38 not found and GLIBCXX_3.4.32 not found.
+# Alpine is further out of reach again -- musl, not glibc.
+FROM ubuntu:24.04
+
+# Everything llama-server and its .so files actually link against, found by
+# running ldd over all of /app. Notably absent: libcurl. The model is baked
+# in, so nothing is ever downloaded at runtime.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      libstdc++6 libgomp1 libssl3 \
+ && rm -rf /var/lib/apt/lists/*
+
+COPY --from=upstream /app /app
+COPY --from=model /models /models
+
+# The base image finds its shared objects relative to the working directory.
+# Change this and the loader fails with "cannot open shared object file",
+# which reads like a missing library rather than a wrong cwd.
+WORKDIR /app
+
+ENV LLAMA_ARG_MODEL=/models/model.gguf \
+    LLAMA_ARG_HOST=0.0.0.0 \
+    LLAMA_ARG_PORT=16002 \
+    LLAMA_ARG_CTX_SIZE=2048 \
+    LLAMA_ARG_N_PREDICT=160
+
+EXPOSE 16002
+ENTRYPOINT ["/app/llama-server"]

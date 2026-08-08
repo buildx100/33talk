@@ -1,0 +1,53 @@
+/* ==================================================================
+   PRINT SHEET
+
+     8.44in page
+     - 0.30in @page margin x2  = 7.84in sheet
+     - 0.32in body padding x2  = 7.20in of type = 72 chars at 10 CPI
+   12pt Courier IS 10 CPI, so the type size falls out of the paper width.
+   Lines sit 12pt apart: six per inch, as on the real platen.
+   Change one number and the whole chain breaks.
+
+   Everything is FOREGROUND -- outline, torn edges, text -- because browsers
+   do not print background colours unless the user opts in. The printed
+   characters are solid: a real printer turns partial opacity into halftone
+   dots, which at 12pt just looks like dirt.
+   ================================================================== */
+
+#printout{display:none;}
+
+@media print{
+  html,body{height:auto;overflow:visible;background:#fff;display:block;}
+  #app,#score,.backdrop{display:none !important;}
+  #printout{display:block;}
+  @page{ size:8.44in 11in; margin:0.30in; }
+}
+
+.psheet{
+  font:12pt/1 'Courier New',Courier,monospace;
+  color:#1C150E;
+}
+
+/* A standalone break element is honoured far more reliably across engines
+   than break-before on the sheet itself. */
+.pagebreak{height:0;break-after:page;page-break-after:always;}
+
+/* The side rules live ONLY between the two torn edges, so they cannot
+   overshoot past the zigzag at either end. Putting the border on the sheet
+   would make it span the padding too. */
+.pbody{
+  border-left:0.6pt solid #2A2118;
+  border-right:0.6pt solid #2A2118;
+  padding:14pt 0.32in;
+}
+
+.tear{display:block;width:100%;height:6pt;overflow:visible;}
+.pline{white-space:pre;height:12pt;}       /* 6 lines per inch */
+.pmeta{white-space:pre;height:12pt;letter-spacing:.04em;}
+.prule{border-top:0.6pt dashed #2A2118;margin:7pt 0;height:0;}
+
+/* Overstruck cell: the extra characters sit exactly on top of the first.
+   No ch units anywhere on this sheet -- they re-resolve against the print
+   font and the columns drift. */
+.ov{position:relative;display:inline-block;}
+.ov i{position:absolute;left:0;top:0;font-style:normal;}

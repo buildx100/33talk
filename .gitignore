@@ -1,0 +1,8 @@
+# Working notes for Claude Code. Deliberately NOT published: it names
+# private infrastructure and local paths. Keep it backed up elsewhere.
+CLAUDE.md
+
+node_modules/
+.env
+*.log
+.DS_Store

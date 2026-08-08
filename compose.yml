@@ -1,0 +1,50 @@
+# 33talk -- one deployment, self-hosted, local inference only.
+#
+#   docker compose up --build
+#   -> http://localhost:16001
+#
+# Behind the Great Firewall, or anywhere huggingface.co is unreachable:
+#   docker compose build --build-arg HF_HOST=https://hf-mirror.com
+#
+# Two containers: nginx serves the static files and reverse-proxies /v1 to
+# llama-server. Same origin, so the browser never makes a cross-origin
+# request and CORS never enters the picture.
+#
+# Verified against the real binary: llama-server does have --path (serve a
+# static directory) and --cors-origins (default "*"), so a single-process
+# arrangement is also possible. It is not used here because the two-service
+# split keeps nginx doing what nginx is good at and leaves the inference
+# container replaceable.
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.web
+    ports:
+      - "${PORT:-16001}:16001"
+    depends_on:
+      - llm
+    restart: unless-stopped
+    # Linux does NOT provide host.docker.internal by default. Without this,
+    # anyone pointing the app at an inference server running on their own
+    # host gets a connection failure with no useful error.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  llm:
+    build:
+      # deploy/ as the context, not the repo root: this image has no COPY,
+      # so there is no reason to ship it the whole source tree.
+      context: deploy
+      dockerfile: Dockerfile.llm
+      args:
+        MODEL_REPO: ${MODEL_REPO:-ggml-org/Qwen3-0.6B-GGUF}
+        MODEL_FILE: ${MODEL_FILE:-Qwen3-0.6B-Q4_0.gguf}
+        HF_HOST: ${HF_HOST:-https://huggingface.co}
+    restart: unless-stopped
+    # The model is inside the image -- no volume, nothing to download at
+    # boot. qwen3:0.6b Q4_0 runs in roughly 400 MB of RAM; a 3-core / 4 GB
+    # box is enough. The paper caps output at 10 characters per second,
+    # which is about 2.5 tokens per second, so any model that runs at all
+    # already outpaces the terminal.

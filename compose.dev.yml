@@ -1,0 +1,24 @@
+# Development overlay. Bind-mounts web/ over the image's static directory,
+# so editing a file and refreshing the browser is the whole loop -- no
+# rebuild, no restart, no container touched.
+#
+#   docker compose -f compose.yml -f compose.dev.yml up
+#
+# Deliberately NOT named docker-compose.override.yml: that filename is
+# loaded automatically, so committing it would silently make the production
+# server serve files from its own host directory instead of the image.
+#
+# A bind mount only shadows the path at RUNTIME. The image still contains
+# whatever `COPY web` baked in, and a later `docker compose build` picks up
+# the current files as normal. The two do not interfere.
+#
+# Do NOT use a named volume here. A named volume mounted over a path the
+# image already populates is seeded from the image ONCE, on first creation,
+# and never updates again -- so you would rebuild, restart, and still be
+# served stale code with nothing to indicate why.
+
+services:
+  web:
+    volumes:
+      # Read-only: the container has no business writing to your source tree.
+      - ./web:/usr/share/nginx/html:ro

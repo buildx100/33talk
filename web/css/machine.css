@@ -1,0 +1,95 @@
+/* Paper, platen, print head, tear bar, cheat panel. */
+
+#pair{display:flex;gap:14px;align-items:flex-end;justify-content:center;flex:0 0 auto;}
+.machine{
+  position:relative;
+  flex:0 0 auto;min-width:0;display:flex;flex-direction:column;
+  filter:drop-shadow(0 16px 34px rgba(0,0,0,.5));
+}
+
+/* Deliberate anachronism: no real machine has this. It exists so remote
+   echo can be shown side by side during a video, and it is drawn dashed so
+   it reads as an overlay rather than part of the machine. */
+.cheatbar{
+  position:absolute;bottom:100%;left:0;right:0;margin-bottom:8px;
+  display:none;align-items:center;justify-content:space-between;gap:12px;
+  height:28px;
+  border:1px dashed #4A4238;background:#1B1814;
+  box-shadow:0 8px 22px rgba(0,0,0,.55);
+  padding:0 10px;font-size:11px;font-family:'Courier New',monospace;
+  z-index:9;
+}
+.cheatbar.show{display:flex;}
+/* Fixed height AND explicit line-height on every text box that can hold
+   CJK: a CJK glyph is taller than a Latin one, so an auto-height line box
+   grows on a language change and shifts everything below it. */
+.cheatbar .lb{color:#6E675B;font-size:9px;letter-spacing:.12em;flex:0 0 auto;line-height:1;}
+.cheatbar .buf{
+  color:#7BC96F;flex:1 1 auto;min-width:0;line-height:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.cheatbar .hostid{color:var(--amber);flex:0 0 auto;letter-spacing:.06em;line-height:1;}
+
+.tearbar{
+  flex:0 0 auto;height:14px;border-radius:4px 4px 0 0;position:relative;z-index:4;
+  background:linear-gradient(180deg,var(--case) 0%,var(--case-dark) 100%);
+}
+.tearbar::after{
+  content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;
+  background:repeating-linear-gradient(90deg,var(--case-dark) 0 3px,transparent 3px 6px);
+}
+
+.pwin{
+  flex:0 0 auto;
+  height:calc(var(--lh) * var(--winlines) + 10px);
+  position:relative;overflow:hidden;background:var(--inside);
+  font-size:var(--pfs);
+  box-shadow:inset 0 8px 14px -6px #000, inset 0 -8px 14px -6px #000;
+}
+/* Anchored to the BOTTOM: the paper grows up out of the machine. The fibre
+   texture is not decoration -- a uniformly coloured surface does not read
+   as moving, and the eye needs a reference to see the feed. */
+.roll{
+  position:absolute;left:0;right:0;bottom:5px;
+  background-color:var(--paper);
+  background-image:
+    repeating-linear-gradient(0deg, rgba(150,124,72,.06) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(90deg, rgba(150,124,72,.04) 0 1px, transparent 1px 3px);
+  background-position:left bottom;
+  box-shadow:0 -3px 7px rgba(0,0,0,.55);
+  will-change:transform;z-index:1;
+}
+.roll::before{
+  content:'';position:absolute;left:0;right:0;top:0;height:3px;
+  background:linear-gradient(180deg,#C9B686,rgba(240,228,192,0));
+}
+.paper{padding:0 14px;color:var(--ink);line-height:var(--lh);white-space:pre;}
+.line{position:relative;height:var(--lh);}
+.cell{position:absolute;top:0;}
+
+.head{
+  position:absolute;z-index:2;bottom:5px;height:var(--lh);width:1ch;
+  background:rgba(28,21,14,.28);border-bottom:2px solid var(--ink);
+  pointer-events:none;transition:left .04s linear;
+}
+/* --crtime is set per return: the head slides home in time proportional to
+   how far it had to travel. */
+.head.returning{transition:left var(--crtime) cubic-bezier(.3,0,.2,1);}
+
+.platen{
+  flex:0 0 auto;height:26px;position:relative;z-index:4;overflow:hidden;
+  background:linear-gradient(180deg,#211E1B 0%,var(--case) 26%,var(--case-dark) 100%);
+  display:flex;align-items:center;justify-content:space-between;padding:0 12px;
+  font-size:10px;letter-spacing:.14em;color:#B8B2A4;
+}
+.platen::before{content:'';position:absolute;left:0;right:0;top:0;height:1px;background:rgba(0,0,0,.6);}
+.knurl{
+  position:absolute;left:0;right:0;top:1px;height:9px;opacity:.4;
+  background:repeating-linear-gradient(90deg,#0E0C0A 0 2px,transparent 2px 5px);
+  transition:background-position .1s linear;
+}
+.platen span{z-index:1;}
+.platen .tag{font-weight:bold;letter-spacing:.28em;color:#E0D9C4;}
+.col{font-variant-numeric:tabular-nums;z-index:1;}
+.lamp{width:7px;height:7px;border-radius:50%;background:#3A3730;transition:background .08s;z-index:1;}
+.lamp.on{background:var(--amber);box-shadow:0 0 8px var(--amber);}

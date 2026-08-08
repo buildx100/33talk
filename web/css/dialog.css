@@ -1,0 +1,46 @@
+/* Help and guess dialogs. Both are drawn as sheets of the same paper. */
+
+.backdrop{
+  position:fixed;inset:0;background:rgba(8,7,5,.78);
+  display:none;align-items:center;justify-content:center;padding:20px;z-index:50;
+}
+.backdrop.show{display:flex;}
+.sheet{
+  background:var(--paper);color:var(--ink);
+  max-height:84vh;overflow:auto;
+  padding:26px 28px;border-radius:2px;
+  box-shadow:0 30px 80px rgba(0,0,0,.7);
+  background-image:repeating-linear-gradient(0deg, rgba(150,124,72,.05) 0 1px, transparent 1px 7px);
+}
+#modal{width:min(600px,100%);}
+#guess-modal{width:min(470px,100%);}
+.sheet h2{margin:0 0 14px;font-size:14px;letter-spacing:.14em;font-weight:normal;}
+.sheet p{margin:0 0 11px;font-size:13px;line-height:1.85;}
+.sheet b{background:rgba(28,21,14,.1);padding:1px 5px;}
+.sheet .rule{height:1px;background:rgba(28,21,14,.2);margin:16px 0;}
+
+.closebtn{
+  background:var(--ink);color:var(--paper);border:none;border-radius:2px;
+  padding:9px 18px;margin-top:8px;letter-spacing:.14em;cursor:pointer;
+  font-family:inherit;font-size:12px;
+}
+.closebtn:hover{background:#352A1D;}
+
+#guess-choices{display:flex;flex-direction:column;gap:10px;margin:18px 0 4px;}
+.gbtn{
+  font-family:'Courier New',Courier,monospace;
+  font-size:14px;letter-spacing:.1em;
+  background:var(--ink);color:var(--paper);
+  border:none;border-radius:2px;padding:15px 12px;cursor:pointer;text-align:center;
+  transition:background .12s;
+}
+.gbtn:hover{background:#352A1D;}
+
+/* The choices are replaced by the verdict in place: you cannot get back to
+   the buttons without a reshuffle. One guess per round. */
+#guess-result{display:none;}
+#guess-result.show{display:block;}
+#guess-verdict{font-size:22px;letter-spacing:.2em;margin:4px 0 12px;font-weight:bold;}
+#guess-verdict.right{color:#3E6B36;}
+#guess-verdict.wrong{color:#8C4A40;}
+#guess-actual{font-size:13px;line-height:1.9;margin-bottom:4px;}

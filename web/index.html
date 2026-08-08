@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>33talk — Model 33 ASR, two machines, one keyboard</title>
+
+<!-- Stylesheet order is the cascade order. -->
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/machine.css">
+<link rel="stylesheet" href="css/keyboard.css">
+<link rel="stylesheet" href="css/panel.css">
+<link rel="stylesheet" href="css/dialog.css">
+<link rel="stylesheet" href="css/print.css">
+</head>
+<body>
+
+<div id="score" aria-live="polite" data-t-title="score">
+  <span class="ok" id="score-ok">0</span><span class="sep">/</span><span class="bad" id="score-bad">0</span>
+</div>
+
+<div id="app">
+  <div id="pair"></div>
+
+  <div id="bottom">
+    <div class="case panel">
+      <div class="cols">
+        <div class="col2">
+          <div class="lbl" data-t="lblSpeed"></div>
+          <button class="pbtn on" data-cps="10" data-t="cps10"></button>
+          <button class="pbtn" data-cps="30" data-t="cps30"></button>
+          <button class="pbtn" data-cps="120" data-t="cps120"></button>
+        </div>
+        <div class="col2">
+          <div class="lbl" data-t="lblSound"></div>
+          <button class="pbtn on" id="snd-btn" data-t="btnSound"></button>
+          <button class="pbtn" id="motor-btn" data-t="btnMotor"></button>
+          <button class="pbtn on" id="bell-btn" data-t="btnBell"></button>
+          <input type="range" id="vol" min="0" max="100" value="70" data-t-aria="volume">
+        </div>
+      </div>
+      <div class="langrow">
+        <button class="pbtn" data-lang="en">EN</button>
+        <button class="pbtn" data-lang="zh">中文</button>
+        <button class="pbtn" data-lang="ja">日本語</button>
+      </div>
+    </div>
+
+    <div class="case" id="deck"><div id="kb"></div></div>
+
+    <div class="case panel">
+      <div class="cols">
+        <div class="col2">
+          <div class="lbl" data-t="lblMachine"></div>
+          <button class="pbtn" id="tear-btn" data-t="btnTear"></button>
+          <button class="pbtn" id="shuffle-btn" data-t="btnShuffle"></button>
+        </div>
+        <div class="col2">
+          <div class="lbl" data-t="lblAux"></div>
+          <button class="pbtn primary" id="reveal-btn" data-t="btnReveal"></button>
+          <button class="pbtn" id="help-btn" data-t="btnHelp"></button>
+          <button class="pbtn" id="cheat-btn" data-t="btnCheat"></button>
+          <button class="pbtn" id="print-btn" data-t="btnPrint"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="backdrop" id="guess-backdrop">
+  <div class="sheet" id="guess-modal" role="dialog" aria-modal="true" data-t-aria="guessTitle">
+    <h2 data-t="guessTitle"></h2>
+    <p id="guess-prompt" data-t="guessPrompt"></p>
+    <div id="guess-choices">
+      <button class="gbtn" data-guess="0" data-t="guessA"></button>
+      <button class="gbtn" data-guess="1" data-t="guessB"></button>
+    </div>
+    <div id="guess-result">
+      <div id="guess-verdict"></div>
+      <div id="guess-actual"></div>
+      <button class="closebtn" id="guess-close" data-t="btnGotIt"></button>
+    </div>
+  </div>
+</div>
+
+<div class="backdrop" id="backdrop">
+  <div class="sheet" id="modal" role="dialog" aria-modal="true" data-t-aria="modalTitle">
+    <h2 data-t="modalTitle"></h2>
+    <div id="modal-body" data-t-html="modalBody"></div>
+    <button class="closebtn" id="modal-close" data-t="btnGotIt"></button>
+  </div>
+</div>
+
+<div id="printout"></div>
+
+<!-- Native ES modules, no bundler. This does NOT work over file:// --
+     module loading is blocked by CORS on the file protocol. Serve web/ over
+     HTTP: `docker compose up`, or `npm run serve` for the front end alone. -->
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

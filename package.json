@@ -1,0 +1,13 @@
+{
+  "name": "33talk",
+  "version": "1.0.0",
+  "description": "Two Teletype Model 33 terminals, one keyboard. One is ELIZA (1966), one is a local LLM (2026). Guess which is which.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test test/",
+    "serve": "python3 -m http.server 16001 --directory web"
+  },
+  "devDependencies": {}
+}

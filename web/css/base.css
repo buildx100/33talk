@@ -1,0 +1,55 @@
+/* Tokens, reset, page frame, scoreboard.
+
+   --key / --gap / --pitch are load-bearing: --pitch is --key + --gap, and
+   the keyboard row stagger is expressed in pitches. Using --key instead
+   makes every step about 15% short. */
+
+:root{
+  --paper:#F0E4C0;
+  --ink:#1C150E;
+  --case:#6B665C;
+  --case-dark:#4A463E;
+  --inside:#15130F;
+  --room:#171512;
+  --deck:#C6BBA1;
+  --deck-dark:#A99E86;
+  --keycap:#5B5A4E;
+  --keycap-lo:#43423A;
+  --legend:#DCD5BE;
+  --amber:#E8A33C;
+  --ok:#5C8C52;
+  --bad:#96544A;
+  --pfs:14px;      /* paper font size, set by fit() */
+  --lh:21px;       /* line height, set by fit() */
+  --winlines:8;    /* visible lines in the platen window, set by fit() */
+  --key:40px;
+  --gap:7px;
+  --pitch:47px;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;height:100%;overflow:hidden;}
+body{
+  background:var(--room);color:#8A8478;
+  font-family:'Courier New',Courier,monospace;
+  display:flex;justify-content:center;
+  -webkit-font-smoothing:antialiased;
+}
+#app{
+  display:flex;flex-direction:column;justify-content:center;
+  width:100%;max-width:1760px;height:100%;padding:12px 20px;
+}
+
+#score{
+  position:fixed;top:10px;right:18px;z-index:40;
+  font-family:'Courier New',Courier,monospace;
+  font-size:13px;letter-spacing:.14em;
+  font-variant-numeric:tabular-nums;
+  color:#4A443A;user-select:none;
+}
+#score .ok{color:var(--ok);}
+#score .bad{color:var(--bad);}
+#score .sep{color:#7A7161;padding:0 4px;}
+
+/* !important, so this holds regardless of which stylesheet comes later. */
+@media (prefers-reduced-motion:reduce){ .head,.roll,.key,.pbtn{transition:none !important;} }
