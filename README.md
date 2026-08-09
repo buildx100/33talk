@@ -1,5 +1,9 @@
 # 33talk
 
+**English** · [简体中文](https://github.com/buildx100/33talk/tree/main/docs/zh-CN) · [日本語](https://github.com/buildx100/33talk/tree/main/docs/ja)
+
+▶ Try it: **[33talk.buildx100.cc](https://33talk.buildx100.cc/)**
+
 **Two Teletype® Model 33 terminals, side by side, driven by one keyboard.**
 One is wired to ELIZA (1966). One is wired to a local LLM (2026). Which is
 which is randomised, and you have to commit to a guess before the answer is
@@ -158,9 +162,12 @@ web/                    native ES modules, no bundler
     ├── eliza-rules.js  the 1966 script, verbatim, + its reader
     └── i18n.js         + locales/{en,zh,ja}.js
 
-Dockerfile              nginx + web/
-Dockerfile.llm          llama-server + the model, baked in
-nginx.conf              static files, and /v1 -> llama-server
+compose.yml             the deployment
+compose.dev.yml         dev overlay: bind-mounts web/
+deploy/
+├── Dockerfile.web      nginx + web/
+├── Dockerfile.llm      llama-server + the model, baked in
+└── nginx.conf          static files, and /v1 -> llama-server
 test/                   node --test, no framework
 docs/                   model33.md, eliza.md
 docs/eliza-original/    the 1966 script as published. Archive: do not edit
@@ -169,9 +176,9 @@ docs/eliza-original/    the 1966 script as published. Archive: do not edit
 There is **one** deployment and one artefact. A build without the LLM would
 be a build without the blind test, and the blind test is the product.
 
-`npm test` runs the suite. It covers exactly one module, `format.js`, because
-that is the only part of this project where a silent bug is a *product* bug —
-see below.
+`npm test` runs 47 tests over the three modules where a silent bug would be a
+*product* bug rather than a cosmetic one: `format.js`, the 1966 script, and
+the failure path that keeps the two machines indistinguishable.
 
 ---
 
